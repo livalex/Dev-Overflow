@@ -42,7 +42,7 @@ export default function RootLayout({
           appearance={{
             elements: {
               formButtonPrimary: "primary-gradient",
-              // text-... is how you make a text a cerain VideoColorSpace, primary-500 is defined in tailwind.config
+              // text-... is how you make a text a certain color, primary-500 is defined in tailwind.config
               footerActionLink: "primary-text-gradient hover:text-primary-500",
             },
           }}
