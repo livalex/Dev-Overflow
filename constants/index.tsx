@@ -1,4 +1,4 @@
-import { SidebarLink } from "@/types";
+import { SidebarLink, Tag, Question } from "../types/index.t";
 
 export const themes = [
   { value: "light", label: "Light", icon: "/assets/icons/sun.svg" },
@@ -71,3 +71,43 @@ export const BADGE_CRITERIA = {
     GOLD: 100000,
   },
 };
+
+export const TAGS: Tag[] = [
+  {
+    _id: 1,
+    name: "NEXTJS",
+    totalQuestions: 10,
+  },
+  {
+    _id: 2,
+    name: "REACT",
+    totalQuestions: 6,
+  },
+  {
+    _id: 3,
+    name: "TEST",
+    totalQuestions: 6,
+  },
+  {
+    _id: 4,
+    name: "NEXT JS",
+    totalQuestions: 5,
+  },
+  {
+    _id: 5,
+    name: "TAILWINDCSS",
+    totalQuestions: 4,
+  },
+];
+
+export const TOP_QUESTIONS: Question[] = [
+  {
+    _id: 1,
+    title:
+      "Best practices for data fetching in a Next.js application with Server-Side Rendering (SSR)?",
+  },
+  { _id: 2, title: "Can I get the course for free?" },
+  { _id: 3, title: "Redux Toolkit Not Updating State as Expected" },
+  { _id: 4, title: "Async/Await Function Not Handling Errors Properly" },
+  { _id: 5, title: "How do I use express as a custom server in NextJS?" },
+];
