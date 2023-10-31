@@ -7,7 +7,7 @@ export interface SidebarLink {
 }
 
 export interface Tag {
-  _id: number;
+  _id: string;
   name: string;
   totalQuestions: number;
 }

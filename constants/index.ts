@@ -1,4 +1,4 @@
-import { SidebarLink, Tag, Question } from "../types/index.t";
+import { SidebarLink, Tag, Question } from "../types";
 
 export const themes = [
   { value: "light", label: "Light", icon: "/assets/icons/sun.svg" },
@@ -74,27 +74,27 @@ export const BADGE_CRITERIA = {
 
 export const TAGS: Tag[] = [
   {
-    _id: 1,
+    _id: "1",
     name: "NEXTJS",
     totalQuestions: 10,
   },
   {
-    _id: 2,
+    _id: "2",
     name: "REACT",
     totalQuestions: 6,
   },
   {
-    _id: 3,
+    _id: "3",
     name: "TEST",
     totalQuestions: 6,
   },
   {
-    _id: 4,
+    _id: "4",
     name: "NEXT JS",
     totalQuestions: 5,
   },
   {
-    _id: 5,
+    _id: "5",
     name: "TAILWINDCSS",
     totalQuestions: 4,
   },
