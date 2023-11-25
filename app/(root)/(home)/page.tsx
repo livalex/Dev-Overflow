@@ -5,8 +5,8 @@ import NoResult from "@/components/shared/NoResult";
 import LocalSearch from "@/components/shared/search/LocalSearch";
 import { Button } from "@/components/ui/button";
 import { HomePageFilters } from "@/constants/filters";
-import Link from "next/link";
 import { getQuestions } from "@/lib/actions/question.action";
+import Link from "next/link";
 
 export default async function Home() {
   const result = await getQuestions({});
