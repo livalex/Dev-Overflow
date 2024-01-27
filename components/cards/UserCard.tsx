@@ -15,7 +15,7 @@ interface UserProps {
 }
 
 const UserCard = async ({ user }: UserProps) => {
-  const { _id, clerkId, username, picture, name } = user;
+  const { _id, username, picture, name } = user;
 
   const interactedTags = await getUserTopInteractedTags({ userId: _id });
 
