@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import React from "react";
 import "./globals.css";
+import "../styles/prism.css";
 // type for TS
 import type { Metadata } from "next";
 // fonts

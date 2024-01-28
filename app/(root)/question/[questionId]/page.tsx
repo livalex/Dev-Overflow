@@ -1,9 +1,14 @@
+import Answer from "@/components/forms/Answer";
 import Metric from "@/components/shared/Metric";
 import ParseHTML from "@/components/shared/ParseHTML";
+import RenderTag from "@/components/shared/RenderTag";
 import { getQuestionById } from "@/lib/actions/question.action";
+import { getUserById } from "@/lib/actions/user.actions";
 import { formatAndDivideNumber, getTimestamp } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
+import { auth } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
 
 interface QuestionDetailsParams {
   params: {
@@ -12,6 +17,14 @@ interface QuestionDetailsParams {
 }
 
 const QuestionDetails = async ({ params }: QuestionDetailsParams) => {
+  const { userId: clerkId } = auth();
+
+  let mongoUser;
+
+  if (clerkId) {
+    mongoUser = await getUserById({ userId: clerkId });
+  }
+
   const questionId = params.questionId;
   const question = await getQuestionById({ questionId });
 
@@ -64,6 +77,21 @@ const QuestionDetails = async ({ params }: QuestionDetailsParams) => {
         />
       </div>
       <ParseHTML data={question.content} />
+      <div className="mt-8 flex flex-wrap gap-2">
+        {question.tags.map((tag: any) => (
+          <RenderTag
+            key={tag._id}
+            _id={tag._id}
+            name={tag.name}
+            showCount={false}
+          />
+        ))}
+      </div>
+      <Answer
+        question={question.content}
+        mongoUserId={JSON.stringify(mongoUser._id)}
+        questionId={JSON.stringify(question._id)}
+      />
     </>
   );
 };
