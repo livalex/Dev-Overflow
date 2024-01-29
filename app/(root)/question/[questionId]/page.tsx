@@ -8,7 +8,8 @@ import { formatAndDivideNumber, getTimestamp } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { auth } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
+import AllAnswers from "@/components/shared/AllAnswers";
+import Votes from "@/components/shared/Votes";
 
 interface QuestionDetailsParams {
   params: {
@@ -47,7 +48,9 @@ const QuestionDetails = async ({ params }: QuestionDetailsParams) => {
               {question.author.name}
             </p>
           </Link>
-          <div className="flex justify-end">VOTING</div>
+          <div className="flex justify-end">
+            <Votes />
+          </div>
         </div>
         <h2 className="h2-semibold text-dark200_light900 mt-3.5 w-full text-left">
           {question.title}
@@ -87,6 +90,11 @@ const QuestionDetails = async ({ params }: QuestionDetailsParams) => {
           />
         ))}
       </div>
+      <AllAnswers
+        questionId={question._id}
+        userId={JSON.stringify(mongoUser._id)}
+        totalAnswers={question.answers.length}
+      />
       <Answer
         question={question.content}
         mongoUserId={JSON.stringify(mongoUser._id)}

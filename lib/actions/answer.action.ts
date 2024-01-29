@@ -1,13 +1,45 @@
 "use server";
 // There's no use client counter part called use server, rather use server is used, as of now, to mark actions exclusively.
-
 // So use server should be used in a file, with nothing but server actions.
 
 import Answer from "@/database/answer.model";
 import { connectedToDatabase } from "../mongoose";
-import { CreateAnswerParams } from "./shared.types";
+import { CreateAnswerParams, GetAnswersParams } from "./shared.types";
 import { revalidatePath } from "next/cache";
 import Question from "@/database/question.model";
+
+export async function getAnswers(params: GetAnswersParams) {
+  try {
+    connectedToDatabase();
+
+    const { questionId } = params;
+
+    // 1. My way
+    // const answers = await Question.findById(questionId).populate({
+    //   path: "answers",
+    //   populate: {
+    //     path: "author",
+    //     model: User,
+    //     select: "_id clerkId name picture",
+    //   },
+    //   options: {
+    //     sort: {
+    //       createdAt: -1,
+    //     },
+    //   },
+    // });
+
+    // 2. Adrian's way
+    const answers = await Answer.find({ question: questionId })
+      .populate("author", "_id clerkId name picture")
+      .sort({ createdAt: -1 });
+
+    return { answers };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
 
 export async function createAnswer(params: CreateAnswerParams) {
   try {
