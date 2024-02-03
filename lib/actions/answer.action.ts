@@ -4,9 +4,91 @@
 
 import Answer from "@/database/answer.model";
 import { connectedToDatabase } from "../mongoose";
-import { CreateAnswerParams, GetAnswersParams } from "./shared.types";
+import {
+  AnswerVoteParams,
+  CreateAnswerParams,
+  GetAnswersParams,
+} from "./shared.types";
 import { revalidatePath } from "next/cache";
 import Question from "@/database/question.model";
+
+export async function upvoteAnswer(params: AnswerVoteParams) {
+  try {
+    connectedToDatabase();
+    const { answerId, userId, path, hasupVoted, hasdownVoted } = params;
+
+    let updateQuery = {};
+
+    if (hasupVoted) {
+      updateQuery = {
+        $pull: { upvotes: userId },
+      };
+    } else if (hasdownVoted) {
+      updateQuery = {
+        $pull: { downvotes: userId },
+        $push: { upvotes: userId },
+      };
+    } else {
+      updateQuery = {
+        $addToSet: { upvotes: userId },
+      };
+    }
+
+    // In Mongoose 4.0, the default value for the new option of findByIdAndUpdate
+    // (and findOneAndUpdate) has changed to false, which means returning the old
+    // doc. So you need to explicitly set the option to true to get the new version
+    // of the doc, after the update is applied
+    const answer = await Answer.findByIdAndUpdate(answerId, updateQuery, {
+      new: true,
+    });
+
+    if (!answer) {
+      throw new Error("Answer not found");
+    }
+
+    revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export async function downvoteAnswer(params: AnswerVoteParams) {
+  try {
+    connectedToDatabase();
+    const { answerId, userId, path, hasupVoted, hasdownVoted } = params;
+
+    let updateQuery = {};
+
+    if (hasdownVoted) {
+      updateQuery = {
+        $pull: { downvotes: userId },
+      };
+    } else if (hasupVoted) {
+      updateQuery = {
+        $pull: { upvotes: userId },
+        $push: { downvotes: userId },
+      };
+    } else {
+      updateQuery = {
+        $addToSet: { downvotes: userId },
+      };
+    }
+
+    const answer = await Answer.findByIdAndUpdate(answerId, updateQuery, {
+      new: true,
+    });
+
+    if (!answer) {
+      throw new Error("Answer not found");
+    }
+
+    revalidatePath(path);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
 
 export async function getAnswers(params: GetAnswersParams) {
   try {

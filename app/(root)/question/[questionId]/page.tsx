@@ -49,7 +49,16 @@ const QuestionDetails = async ({ params }: QuestionDetailsParams) => {
             </p>
           </Link>
           <div className="flex justify-end">
-            <Votes />
+            <Votes
+              upvotes={question.upvotes.length}
+              downvotes={question.downvotes.length}
+              hasUpvoted={question.upvotes.includes(mongoUser._id)}
+              hasDownvoted={question.downvotes.includes(mongoUser._id)}
+              type="Question"
+              itemdId={JSON.stringify(question._id)}
+              userId={JSON.stringify(mongoUser._id)}
+              hasSaved={mongoUser?.saved.includes(question._id)}
+            />
           </div>
         </div>
         <h2 className="h2-semibold text-dark200_light900 mt-3.5 w-full text-left">
@@ -92,7 +101,7 @@ const QuestionDetails = async ({ params }: QuestionDetailsParams) => {
       </div>
       <AllAnswers
         questionId={question._id}
-        userId={JSON.stringify(mongoUser._id)}
+        userId={mongoUser._id}
         totalAnswers={question.answers.length}
       />
       <Answer
