@@ -55,7 +55,7 @@ const QuestionDetails = async ({ params }: QuestionDetailsParams) => {
               hasUpvoted={question.upvotes.includes(mongoUser._id)}
               hasDownvoted={question.downvotes.includes(mongoUser._id)}
               type="Question"
-              itemdId={JSON.stringify(question._id)}
+              itemId={JSON.stringify(question._id)}
               userId={JSON.stringify(mongoUser._id)}
               hasSaved={mongoUser?.saved.includes(question._id)}
             />
@@ -83,7 +83,7 @@ const QuestionDetails = async ({ params }: QuestionDetailsParams) => {
         <Metric
           imgUrl="/assets/icons/eye.svg"
           alt="eye"
-          value={formatAndDivideNumber(question.views.length)}
+          value={formatAndDivideNumber(question.views)}
           title=" Views"
           textStyles="small-medium text-dark400_light800"
         />

@@ -72,7 +72,7 @@ const AllAnswers = async ({
                     hasUpvoted={answer.upvotes.includes(userId)}
                     hasDownvoted={answer.downvotes.includes(userId)}
                     type="Answer"
-                    itemdId={JSON.stringify(answer._id)}
+                    itemId={JSON.stringify(answer._id)}
                     userId={JSON.stringify(userId)}
                   />
                 </div>

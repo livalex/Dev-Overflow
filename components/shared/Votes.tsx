@@ -1,6 +1,7 @@
 "use client";
 
 import { downvoteAnswer, upvoteAnswer } from "@/lib/actions/answer.action";
+import { viewQuestion } from "@/lib/actions/interaction.action";
 import {
   downvoteQuestion,
   upvoteQuestion,
@@ -8,7 +9,8 @@ import {
 import { toggleSaveQuestion } from "@/lib/actions/user.actions";
 import { formatAndDivideNumber } from "@/lib/utils";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 interface VotesProps {
   upvotes: number;
@@ -16,7 +18,7 @@ interface VotesProps {
   hasUpvoted: boolean;
   hasDownvoted: boolean;
   type: string;
-  itemdId: string;
+  itemId: string;
   userId: string;
   hasSaved?: boolean;
 }
@@ -27,10 +29,11 @@ const Votes = ({
   hasUpvoted,
   hasDownvoted,
   type,
-  itemdId,
+  itemId,
   userId,
   hasSaved,
 }: VotesProps) => {
+  const router = useRouter();
   const pathName = usePathname();
 
   const handleSave = async () => {
@@ -40,7 +43,7 @@ const Votes = ({
 
     await toggleSaveQuestion({
       userId: JSON.parse(userId),
-      questionId: JSON.parse(itemdId),
+      questionId: JSON.parse(itemId),
       path: pathName,
     });
   };
@@ -51,7 +54,7 @@ const Votes = ({
     }
 
     const questionArgument = {
-      questionId: JSON.parse(itemdId),
+      questionId: JSON.parse(itemId),
       userId: JSON.parse(userId),
       hasupVoted: hasUpvoted,
       hasdownVoted: hasDownvoted,
@@ -59,7 +62,7 @@ const Votes = ({
     };
 
     const answerArgument = {
-      answerId: JSON.parse(itemdId),
+      answerId: JSON.parse(itemId),
       userId: JSON.parse(userId),
       hasupVoted: hasUpvoted,
       hasdownVoted: hasDownvoted,
@@ -80,6 +83,13 @@ const Votes = ({
       }
     }
   };
+
+  useEffect(() => {
+    viewQuestion({
+      questionId: JSON.parse(itemId),
+      userId: userId ? JSON.parse(userId) : undefined,
+    });
+  }, [itemId, userId, pathName, router]);
 
   return (
     <div className="flex gap-5">
