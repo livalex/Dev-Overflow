@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 
 const SideBarContent = () => {
   const pathName = usePathname();
-  const { isSignedIn } = useAuth();
+  const { userId, isSignedIn } = useAuth();
   const filteredLinks = isSignedIn
     ? sidebarLinks
     : sidebarLinks.filter((item) => item.route !== "/profile");
@@ -21,6 +21,14 @@ const SideBarContent = () => {
         const isActive =
           (pathName.includes(item.route) && item.route.length > 1) ||
           pathName === item.route;
+
+        if (item.route === "/profile") {
+          if (userId) {
+            item.route = `${item.route}/${userId}`;
+          } else {
+            return null;
+          }
+        }
 
         return (
           <Link

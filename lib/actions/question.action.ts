@@ -153,7 +153,7 @@ export async function createQuestion(params: CreateQuestionParams) {
       // - It returns the updated or newly created document as a result
       const existingTag = await Tag.findOneAndUpdate(
         { name: { $regex: new RegExp(`^${tag}$`, "i") } }, // find something
-        { $setOnInsert: { name: tag }, $push: { question: question._id } }, // do some things on it
+        { $setOnInsert: { name: tag }, $push: { questions: question._id } }, // do some things on it
         { upsert: true, new: true } // aditional options
       );
 
