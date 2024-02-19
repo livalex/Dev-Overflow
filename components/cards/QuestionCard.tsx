@@ -20,9 +20,11 @@ interface QuestionProps {
   views: number;
   answers: Array<object>;
   createdAt: Date;
+  clerkId?: string | null;
 }
 
 const QuestionCard = ({
+  clerkId,
   _id,
   title,
   tags,
@@ -45,6 +47,7 @@ const QuestionCard = ({
             </h3>
           </Link>
         </div>
+        {/* If signed in add edit delete actions */}
       </div>
       <div className="mt-3.5 flex flex-wrap gap-2">
         {tags.map((tag) => (
