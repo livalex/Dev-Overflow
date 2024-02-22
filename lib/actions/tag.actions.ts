@@ -11,6 +11,31 @@ import Tag, { ITag } from "@/database/tag.model";
 import { FilterQuery } from "mongoose";
 import Question from "@/database/question.model";
 
+export async function getTopPopularTags() {
+  try {
+    connectedToDatabase();
+
+    // find results can only include content from the docs themselves, while
+    // aggregate can project new values that are derived from the doc's content
+    // (like an array's length)
+
+    // $project reshapes our tag and what we want to get back
+
+    const topPopularTags = Tag.aggregate([
+      {
+        $project: { name: "$name", numberOfQuestions: { $size: "$questions" } },
+      },
+      { $sort: { numberOfQuestions: -1 } },
+      { $limit: 5 },
+    ]);
+
+    return topPopularTags;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
 export async function getQuestionsByTagId(params: GetQuestionsByTagIdParams) {
   try {
     connectedToDatabase();
