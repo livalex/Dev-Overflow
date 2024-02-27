@@ -1,4 +1,4 @@
-import { SidebarLink, Tag, Question } from "../types";
+import { SidebarLink, Tag } from "../types";
 
 export const themes = [
   { value: "light", label: "Light", icon: "/assets/icons/sun.svg" },

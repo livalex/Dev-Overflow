@@ -95,7 +95,12 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
 
     const { clerkId, searchQuery } = params;
     const query: FilterQuery<typeof Question> = searchQuery
-      ? { title: { $regex: new RegExp(searchQuery, "i") } }
+      ? {
+          $or: [
+            { title: { $regex: new RegExp(searchQuery, "i") } },
+            { content: { $regex: new RegExp(searchQuery, "i") } },
+          ],
+        }
       : {};
 
     const user = await User.findOne({ clerkId }).populate({
@@ -166,10 +171,19 @@ export async function getAllUsers(params: GetAllUsersParams) {
   try {
     connectedToDatabase();
 
-    // const { page = 1, pageSize = 20, filter, searchQuery } = params;
+    const { searchQuery } = params;
+
+    const query: FilterQuery<typeof User> = searchQuery
+      ? {
+          $or: [
+            { name: { $regex: new RegExp(searchQuery, "i") } },
+            { username: { $regex: new RegExp(searchQuery, "i") } },
+          ],
+        }
+      : {};
 
     // It sorts them from most recent to the oldest.
-    const users = await User.find({}).sort({ createdAt: -1 });
+    const users = await User.find(query).sort({ createdAt: -1 });
 
     return { users };
   } catch (error) {

@@ -15,6 +15,7 @@ import User from "@/database/user.model";
 import { revalidatePath } from "next/cache";
 import Answer from "@/database/answer.model";
 import Interaction from "@/database/interaction.model";
+import { FilterQuery } from "mongoose";
 
 export async function getHotQuestions() {
   try {
@@ -143,13 +144,40 @@ export async function getQuestions(params: GetQuestionsParams) {
     // connect to DB
     connectedToDatabase();
 
+    const { searchQuery } = params;
+
     // Question.find({}) finds all the questions
     // If a specific questions has tags, we want to populate
     // that path so we can display them. That is because MongoDB,
     // by default, doesn't keep full data on the Question model,
     // just some references on types like Objects and Arrays.
     // Finally, it sorts them from most recent to the oldest.
-    const questions = await Question.find({})
+    // const questions = await Question.find({})
+    //   .populate({ path: "tags", model: Tag })
+    //   .populate({ path: "author", model: User })
+    //   .sort({ createdAt: -1 });
+
+    const query: FilterQuery<typeof Question> = searchQuery
+      ? {
+          $or: [
+            { title: { $regex: new RegExp(searchQuery, "i") } },
+            { content: { $regex: new RegExp(searchQuery, "i") } },
+          ],
+        }
+      : {};
+
+    // OR Adrian's way
+
+    // const query: FilterQuery<typeof Question> = {};
+
+    // if(searchQuery) {
+    //   query.$or = [
+    //     { title: { $regex: new RegExp(searchQuery, "i")}},
+    //     { content: { $regex: new RegExp(searchQuery, "i")}},
+    //   ]
+    // }
+
+    const questions = await Question.find(query)
       .populate({ path: "tags", model: Tag })
       .populate({ path: "author", model: User })
       .sort({ createdAt: -1 });

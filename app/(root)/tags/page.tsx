@@ -5,9 +5,11 @@ import { TagFilters } from "@/constants/filters";
 import { getAllTags } from "@/lib/actions/tag.actions";
 import TagCard from "@/components/cards/TagCard";
 import NoResult from "@/components/shared/NoResult";
+import { SearchParamsProps } from "@/types";
 
-const Tags = async () => {
-  const result = await getAllTags({});
+const Tags = async ({ searchParams }: SearchParamsProps) => {
+  const searchQuery = searchParams.q;
+  const result = await getAllTags({ searchQuery });
 
   return (
     <>
