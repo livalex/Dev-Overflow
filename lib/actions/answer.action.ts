@@ -120,7 +120,7 @@ export async function getAnswers(params: GetAnswersParams) {
   try {
     connectedToDatabase();
 
-    const { questionId } = params;
+    const { questionId, sortBy } = params;
 
     // 1. My way
     // const answers = await Question.findById(questionId).populate({
@@ -137,10 +137,22 @@ export async function getAnswers(params: GetAnswersParams) {
     //   },
     // });
 
+    let sortOptions = {};
+
+    if (sortBy === "highestUpvotes") {
+      sortOptions = { upvotes: -1 };
+    } else if (sortBy === "lowestUpvotes") {
+      sortOptions = { upvotes: 1 };
+    } else if (sortBy === "recent") {
+      sortOptions = { createdAt: -1 };
+    } else if (sortBy === "old") {
+      sortOptions = { createdAt: 1 };
+    }
+
     // 2. Adrian's way
     const answers = await Answer.find({ question: questionId })
       .populate("author", "_id clerkId name picture")
-      .sort({ createdAt: -1 });
+      .sort(sortOptions);
 
     return { answers };
   } catch (error) {

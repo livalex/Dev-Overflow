@@ -6,15 +6,13 @@ import Image from "next/image";
 import { getTimestamp } from "@/lib/utils";
 import ParseHTML from "./ParseHTML";
 import Votes from "./Votes";
-import { getUserById } from "@/lib/actions/user.actions";
-import { auth } from "@clerk/nextjs";
 
 interface Props {
   questionId: string;
   userId: string;
   totalAnswers: number;
-  page?: number;
-  filter?: number;
+  page?: string;
+  filter?: string;
 }
 
 const AllAnswers = async ({
@@ -24,15 +22,12 @@ const AllAnswers = async ({
   page,
   filter,
 }: Props) => {
-  const { userId: clerkId } = auth();
-
-  let mongoUser: { _id: any; saved: string | any[] };
-
-  if (clerkId) {
-    mongoUser = await getUserById({ userId: clerkId });
-  }
-
-  const result = await getAnswers({ questionId });
+  // +page converts string from page into a number
+  const result = await getAnswers({
+    questionId,
+    sortBy: filter,
+    page: page ? +page : 1,
+  });
 
   return (
     <div className="mt-11">

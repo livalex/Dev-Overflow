@@ -10,6 +10,7 @@ import { SearchParamsProps } from "@/types";
 export default async function Home({ searchParams }: SearchParamsProps) {
   const { userId } = auth();
   const searchQuery = searchParams.q;
+  const filter = searchParams.filter;
 
   if (!userId) {
     return null;
@@ -18,6 +19,7 @@ export default async function Home({ searchParams }: SearchParamsProps) {
   const savedQuestions = await getSavedQuestions({
     clerkId: userId,
     searchQuery,
+    filter,
   });
 
   return (

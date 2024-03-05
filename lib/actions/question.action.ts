@@ -144,7 +144,7 @@ export async function getQuestions(params: GetQuestionsParams) {
     // connect to DB
     connectedToDatabase();
 
-    const { searchQuery } = params;
+    const { searchQuery, filter } = params;
 
     // Question.find({}) finds all the questions
     // If a specific questions has tags, we want to populate
@@ -176,11 +176,20 @@ export async function getQuestions(params: GetQuestionsParams) {
     //     { content: { $regex: new RegExp(searchQuery, "i")}},
     //   ]
     // }
+    let sortOptions = {};
+
+    if (filter === "newest") {
+      sortOptions = { createdAt: -1 };
+    } else if (filter === "frequent") {
+      sortOptions = { views: -1 };
+    } else if (filter === "unanswered") {
+      query.answers = { $size: 0 };
+    }
 
     const questions = await Question.find(query)
       .populate({ path: "tags", model: Tag })
       .populate({ path: "author", model: User })
-      .sort({ createdAt: -1 });
+      .sort(sortOptions);
 
     return { questions };
   } catch (error) {

@@ -10,15 +10,12 @@ import Link from "next/link";
 import { auth } from "@clerk/nextjs";
 import AllAnswers from "@/components/shared/AllAnswers";
 import Votes from "@/components/shared/Votes";
+import { URLProps } from "@/types";
 
-interface QuestionDetailsParams {
-  params: {
-    questionId: string;
-  };
-}
-
-const QuestionDetails = async ({ params }: QuestionDetailsParams) => {
+const QuestionDetails = async ({ params, searchParams }: URLProps) => {
   const { userId: clerkId } = auth();
+  const filter = searchParams.filter;
+  const page = searchParams.page;
 
   let mongoUser;
 
@@ -26,7 +23,7 @@ const QuestionDetails = async ({ params }: QuestionDetailsParams) => {
     mongoUser = await getUserById({ userId: clerkId });
   }
 
-  const questionId = params.questionId;
+  const questionId = params.id;
   const question = await getQuestionById({ questionId });
 
   return (
@@ -103,6 +100,8 @@ const QuestionDetails = async ({ params }: QuestionDetailsParams) => {
         questionId={question._id}
         userId={mongoUser._id}
         totalAnswers={question.answers.length}
+        filter={filter}
+        page={page}
       />
       <Answer
         question={question.content}

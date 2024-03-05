@@ -73,13 +73,25 @@ export async function getAllTags(params: GetAllTagsParams) {
   try {
     connectedToDatabase();
 
-    const { searchQuery } = params;
+    const { searchQuery, filter } = params;
 
     const query: FilterQuery<typeof Question> = searchQuery
       ? { name: { $regex: new RegExp(searchQuery, "i") } }
       : {};
 
-    const tags = await Tag.find(query);
+    let sortOptions = {};
+
+    if (filter === "popular") {
+      sortOptions = { questions: -1 };
+    } else if (filter === "recent") {
+      sortOptions = { createdOn: -1 };
+    } else if (filter === "name") {
+      sortOptions = { name: 1 };
+    } else if (filter === "old") {
+      sortOptions = { createdOn: 1 };
+    }
+
+    const tags = await Tag.find(query).sort(sortOptions);
 
     return { tags };
   } catch (error) {

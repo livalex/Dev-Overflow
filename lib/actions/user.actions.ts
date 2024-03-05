@@ -93,7 +93,7 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
   try {
     connectedToDatabase();
 
-    const { clerkId, searchQuery } = params;
+    const { clerkId, searchQuery, filter } = params;
     const query: FilterQuery<typeof Question> = searchQuery
       ? {
           $or: [
@@ -103,11 +103,25 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
         }
       : {};
 
+    let sortOptions = {};
+
+    if (filter === "most_recent") {
+      sortOptions = { createdAt: -1 };
+    } else if (filter === "oldest") {
+      sortOptions = { createdAt: 1 };
+    } else if (filter === "most_voted") {
+      sortOptions = { upvotes: -1 };
+    } else if (filter === "most_viewed") {
+      sortOptions = { views: -1 };
+    } else if (filter === "most_answered") {
+      sortOptions = { answers: -1 };
+    }
+
     const user = await User.findOne({ clerkId }).populate({
       path: "saved",
       match: query,
       options: {
-        sort: { createdAt: -1 },
+        sort: sortOptions,
       },
       populate: [
         { path: "tags", model: Tag, select: "_id name" },
@@ -171,7 +185,7 @@ export async function getAllUsers(params: GetAllUsersParams) {
   try {
     connectedToDatabase();
 
-    const { searchQuery } = params;
+    const { searchQuery, filter } = params;
 
     const query: FilterQuery<typeof User> = searchQuery
       ? {
@@ -182,8 +196,18 @@ export async function getAllUsers(params: GetAllUsersParams) {
         }
       : {};
 
+    let sortOptions = {};
+
+    if (filter === "new_users") {
+      sortOptions = { joinedAt: -1 };
+    } else if (filter === "old_users") {
+      sortOptions = { joinedAt: 1 };
+    } else if (filter === "top_contributors") {
+      sortOptions = { reputation: -1 };
+    }
+
     // It sorts them from most recent to the oldest.
-    const users = await User.find(query).sort({ createdAt: -1 });
+    const users = await User.find(query).sort(sortOptions);
 
     return { users };
   } catch (error) {

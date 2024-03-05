@@ -15,13 +15,12 @@ interface UserProps {
 }
 
 const UserCard = async ({ user }: UserProps) => {
-  const { _id, username, picture, name } = user;
-
+  const { _id, clerkId, username, picture, name } = user;
   const interactedTags = await getUserTopInteractedTags({ userId: _id });
 
   return (
     <Link
-      href={`/profile/${_id}`}
+      href={`/profile/${clerkId}`}
       className="shadow-light100_darknone w-full max-xs:min-w-full xs:w-[260px]"
     >
       <article className="background-light900_dark200 light-border flex w-full flex-col items-center justify-center rounded-2xl border p-8">
