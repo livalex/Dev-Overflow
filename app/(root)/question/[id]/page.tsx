@@ -15,7 +15,7 @@ import { URLProps } from "@/types";
 const QuestionDetails = async ({ params, searchParams }: URLProps) => {
   const { userId: clerkId } = auth();
   const filter = searchParams.filter;
-  const page = searchParams.page;
+  const page = searchParams.page ?? "1";
 
   let mongoUser;
 

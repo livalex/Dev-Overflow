@@ -1,13 +1,5 @@
-import { getUserById, getUserQuestions } from "@/lib/actions/user.actions";
-import { auth } from "@clerk/nextjs";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import { getUserQuestions } from "@/lib/actions/user.actions";
+import Pagination from "@/components/shared/Pagination";
 import { SearchParamsProps } from "@/types";
 import QuestionCard from "../cards/QuestionCard";
 
@@ -17,16 +9,15 @@ interface QuestionTabInterface extends SearchParamsProps {
 }
 
 const QuestionTab = async ({
-  searchProps,
+  searchParams,
   userId,
   clerkId,
 }: QuestionTabInterface) => {
-  const pageSize = 10;
+  const page = searchParams.page ?? "1";
 
   const userQuestions = await getUserQuestions({
     userId,
-    page: 1,
-    pageSize,
+    page: +page,
   });
 
   return (
@@ -45,21 +36,9 @@ const QuestionTab = async ({
           createdAt={question.createdAt}
         />
       ))}
-      {userQuestions.totalQuestions > pageSize && (
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious href="#" />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">1</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext href="#" />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      )}
+      <div className="mt-10">
+        <Pagination pageNumber={+page} isNext={userQuestions.isNext} />
+      </div>
     </>
   );
 };

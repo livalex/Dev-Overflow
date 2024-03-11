@@ -120,7 +120,8 @@ export async function getAnswers(params: GetAnswersParams) {
   try {
     connectedToDatabase();
 
-    const { questionId, sortBy } = params;
+    const { questionId, sortBy, page = 1, pageSize = 20 } = params;
+    const skipAmount = pageSize * (page - 1);
 
     // 1. My way
     // const answers = await Question.findById(questionId).populate({
@@ -150,11 +151,17 @@ export async function getAnswers(params: GetAnswersParams) {
     }
 
     // 2. Adrian's way
-    const answers = await Answer.find({ question: questionId })
+    const filteredAnswers = await Answer.find({ question: questionId })
       .populate("author", "_id clerkId name picture")
+      .skip(skipAmount)
+      .limit(pageSize)
       .sort(sortOptions);
 
-    return { answers };
+    const totalAnswers = (await Answer.find({ question: questionId })).length;
+
+    const isNext = totalAnswers > skipAmount + filteredAnswers.length;
+
+    return { answers: filteredAnswers, isNext };
   } catch (error) {
     console.log(error);
     throw error;
