@@ -196,9 +196,19 @@ export async function createAnswer(params: CreateAnswerParams) {
     });
 
     // Add the answer to the question's answer array
-    await Question.findByIdAndUpdate(question, {
+    const questionObject = await Question.findByIdAndUpdate(question, {
       $push: { answers: newAnswer._id },
     });
+
+    await Interaction.create({
+      user: author,
+      action: "answer",
+      question,
+      answer: newAnswer._id,
+      tags: questionObject.tags,
+    });
+
+    await User.findByIdAndUpdate(author, { $inc: { reputation: 10 } });
 
     // just refreshes the home page path so that the new question appears
     // Definition: allows you tu purge cached data on-demand for a specific path
