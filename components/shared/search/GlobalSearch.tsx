@@ -24,25 +24,26 @@ const GlobalSearch = () => {
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      let newUrl = "/";
       if (searchInput) {
-        newUrl = formUrlQuery({
+        const newUrl = formUrlQuery({
           // params will be q=lala&p=bebe for http://localhost:3000/?q=lala&p=bebe
           params: searchParams.toString(),
           key: "global",
           value: searchInput,
         });
+
+        router.push(newUrl, { scroll: false });
       } else {
         // if the query from the local search exists, delete the search from global
         if (query) {
-          newUrl = removeKeysFromQuery({
+          const newUrl = removeKeysFromQuery({
             params: searchParams.toString(),
             keysToRemove: ["global", "type"],
           });
+
+          router.push(newUrl, { scroll: false });
         }
       }
-
-      router.push(newUrl, { scroll: false });
     }, 300);
 
     return () => clearTimeout(delayDebounceFn);
