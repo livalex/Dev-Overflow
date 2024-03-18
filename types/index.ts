@@ -56,4 +56,22 @@ export interface BadgeCounts {
   BRONZE: number;
 }
 
+// As you might already know, the typeof operator gives you the type of an object. In the above example of Person interface, we already knew the type, so we just had to use the keyof operator on type Person.
+
+// But what to do when we don't know the type of an object or we just have a value and not a type of that value like the following?
+
+// const bmw = { name: "BMW", power: "1000hp" }
+// This is where we use keyof typeof together.
+
+// The typeof bmw gives you the type: { name: string, power: string }
+
+// And then keyof operator gives you the literal type union as shown in the following code:
+
+// type CarLiteralType = keyof typeof bmw
+
+// let carPropertyLiteral: CarLiteralType
+// carPropertyLiteral = "name"       // OK
+// carPropertyLiteral = "power"      // OK
+// carPropertyLiteral = "anyOther"   // Error...
+
 export type BadgeCriteriaType = keyof typeof BADGE_CRITERIA;

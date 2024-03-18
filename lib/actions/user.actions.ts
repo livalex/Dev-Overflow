@@ -17,6 +17,8 @@ import Question from "@/database/question.model";
 import { FilterQuery } from "mongoose";
 import Tag from "@/database/tag.model";
 import Answer from "@/database/answer.model";
+import { BadgeCriteriaType } from "@/types";
+import { assignBadges } from "../utils";
 
 export async function getUserAnswers(params: GetUserStatsParams) {
   try {
@@ -87,11 +89,63 @@ export async function getUserInfo(params: GetUserByIdParams) {
 
     const totalQuestions = await Question.countDocuments({ author: user._id });
     const totalAnswers = await Answer.countDocuments({ author: user._id });
+    // The aggregation returns an array
+    const [questionUpvotes] = await Question.aggregate([
+      {
+        $match: { author: user._id }, // for filtering
+      },
+      // Passes along the documents with the requested fields to the next stage in
+      // the pipeline. The specified fields can be existing fields from the input
+      // documents or newly computed fields.
+      { $project: { upvotes: { $size: "$upvotes" } } },
+      // The $group stage separates documents into groups according to a
+      // "group key". The output is one document for each unique group key.
+      { $group: { _id: null, totalUpvotes: { $sum: "$upvotes" } } },
+    ]);
+    const [answerUpvotes] = await Answer.aggregate([
+      {
+        $match: { author: user._id },
+      },
+      { $project: { upvotes: { $size: "$upvotes" } } },
+      { $group: { _id: null, totalUpvotes: { $sum: "$upvotes" } } },
+    ]);
+    const [questionViews] = await Question.aggregate([
+      {
+        $match: { author: user._id },
+      },
+      { $group: { _id: null, totalViews: { $sum: "$views" } } },
+    ]);
+
+    // "as" is called Type Assertion, you are just telling the compiler to treat something as a type:
+
+    // var a = 'TEST STRING'
+    // var b = a as string; //Means the compiler will assume it's a string
+
+    const criteria = [
+      { type: "QUESTION_COUNT" as BadgeCriteriaType, count: totalQuestions },
+      { type: "ANSWER_COUNT" as BadgeCriteriaType, count: totalAnswers },
+      {
+        type: "QUESTION_UPVOTES" as BadgeCriteriaType,
+        count: questionUpvotes?.totalUpvotes || 0,
+      },
+      {
+        type: "ANSWER_UPVOTES" as BadgeCriteriaType,
+        count: answerUpvotes?.totalUpvotes || 0,
+      },
+      {
+        type: "TOTAL_VIEWS" as BadgeCriteriaType,
+        count: questionViews?.totalViews || 0,
+      },
+    ];
+
+    const badgeCounts = assignBadges({ criteria });
 
     return {
       user,
       totalQuestions,
       totalAnswers,
+      badgeCounts,
+      reputation: user.reputation,
     };
   } catch (error) {
     console.log(error);
